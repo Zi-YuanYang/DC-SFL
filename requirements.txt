@@ -1,0 +1,6 @@
+phe
+wandb
+matplotlib
+torchsummary
+torchstat
+thop
