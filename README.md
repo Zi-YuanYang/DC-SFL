@@ -25,7 +25,7 @@ pip install requirements.txt
 ```
 
 #### Note
-This implementation is released for the restoration task, which is based on RED-CNN. It can be easily reproduced to the segmentation task, and DC-SFL can keep its performance in the segmentation task.
+This implementation is released for the restoration task, which is based on RED-CNN. As we shown in the paper, our method can be easily reproduced to the segmentation task, and DC-SFL can keep its performance in the segmentation task.
 
 #### Acknowledgments
 Thanks to my all cooperators, they contributed so much to this work.
