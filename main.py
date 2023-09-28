@@ -243,29 +243,24 @@ class net():
                         input_data = input_data.to(self.device)
                         label_data = label_data.to(self.device)
 
-                        ###输入给到第一个本地网络
                         self.client_1_optimizers[i_wkr].zero_grad()
                         out_1 = self.client_models_1[i_wkr](input_data)
                         # if dp == 1:
                         #     out_1 = add_noise(out_1, self.dp, self.device)
                         client_feature_1 = out_1.clone().detach().requires_grad_(True)
 
-                        ###把第一个本地网络的输出给到云端
                         self.server_optimizers[i_wkr].zero_grad()
                         server_out = self.server_models[i_wkr](client_feature_1)
                         # server_out = add_noise(server_out, self.dp, self.device)
                         server_model_feature = server_out.clone().detach().requires_grad_(True)
-
-                        ###云端输出给到第二个本地网络
+                               
                         self.client_2_optimizers[i_wkr].zero_grad()
                         final_output = self.client_models_2[i_wkr](server_model_feature, input_data)
 
-                        ##计算loss，第二个本地网络进行更新
                         loss = self.loss(final_output, label_data)
                         loss.backward()
                         self.client_2_optimizers[i_wkr].step()
 
-                        ###云端网络进行更新
                         dfx_server = server_model_feature.grad.clone().detach()
                         server_out.backward(dfx_server)
                         self.server_optimizers[i_wkr].step()
@@ -350,7 +345,7 @@ class net():
 
                 
                 if com_iter > 0:
-                    self.Prox_Alpha_aggre(com_iter - 1)
+                    self.DWCS(com_iter - 1)
 
                 if opt.checkpoint_interval != -1 and (com_iter + 1) % opt.checkpoint_interval == 0:
                     torch.save(self.server_model.state_dict(), '%s/model_commu_%04d.pth' % (self.path, com_iter + 1))
@@ -416,7 +411,7 @@ class net():
         ### Change pre models
         self.Change_premodels()
 
-    def Prox_Alpha_aggre(self, epoch):
+    def DWCS(self, epoch):
 
         ## Give Temp Value.
         self.Change_Temp_Model()
